@@ -1,4 +1,4 @@
-
+-- A
 CREATE TABLE person (
     personnummer CHAR(11) PRIMARY KEY NOT NULL,
     fornavn VARCHAR(100) NOT NULL,
@@ -34,20 +34,76 @@ CREATE TABLE Passering (
     CONSTRAINT fk_regnr FOREIGN KEY (regnrfk) REFERENCES bil(regnr)
 );
 
+-- B
+INSERT INTO person VALUES
+('12345678901','Ola','Nordmann',DEFAULT,'ola@mail.no'),
+('10987654321','Kari','Nordmann',DEFAULT,'kari@mail.no');
 
+
+INSERT INTO bil (registreringsbokstav, registreringstall, merke, modell, eigar_id)
+VALUES
+('AA',10000,'Toyota','Corolla','12345678901'),
+('BB',20000,'Tesla','Model 3','10987654321');
+
+
+INSERT INTO passering (regnr, bomstasjon)
+VALUES
+('AA10000','Bergen Nord'),
+('AA10000','Bergen Sør'),
+('BB20000','Bergen Nord'),
+(NULL,'Bergen Sør'); -- skilt kunne ikkje lesast
+
+-- C
+ALTER TABLE person
+DROP COLUMN telefonnummer;
+
+-- E
+SELECT
+    p.passering_id,
+    p.tidspunkt,
+    p.bomstasjon,
+    b.regnr,
+    per.navn,
+    per.epost
+FROM passering p
+LEFT JOIN bil b ON p.regnr = b.regnr
+LEFT JOIN person per ON b.eigar_id = per.personnummer
+ORDER BY p.tidspunkt;
+
+-- F
+SELECT
+    p.passering_id,
+    p.tidspunkt,
+    p.bomstasjon,
+    b.regnr,
+    per.navn,
+    per.epost
+FROM passering p
+JOIN bil b ON p.regnr = b.regnr
+JOIN person per ON b.eigar_id = per.personnummer
+ORDER BY p.tidspunkt;
+
+-- H
+SELECT regnr, COUNT(*) AS antall_passeringar
+FROM passering
+WHERE regnr IS NOT NULL
+GROUP BY regnr;
+
+-- I
 SELECT *
 FROM passering
-ORDER BY tidspunkt DESC;
+WHERE regnr = 'AA10000'
+ORDER BY tidspunkt DESC
+LIMIT 1;
 
-SELECT b.regnr, b.merke, b.modell
-FROM bil b
-JOIN person p ON b.eigar_id = p.personnummer
-WHERE p.personnummer = '12345678901';
-
-SELECT bompengebod, COUNT(*) AS antall_passeringar
+-- J
+SELECT COUNT(*) AS antall_ukjente_passeringar
 FROM passering
-GROUP BY bompengebod;
+WHERE regnr IS NULL;
 
-SELECT *
-FROM passering
-WHERE skiltnummer IS NULL;
+-- L 
+CREATE TABLE bomstasjon (
+    bom_id SERIAL PRIMARY KEY,
+    navn VARCHAR(50),
+    plassering VARCHAR(100)
+);
