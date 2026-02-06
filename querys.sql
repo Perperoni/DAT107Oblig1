@@ -29,9 +29,9 @@ CREATE TABLE Passering (
     passering_id SERIAL PRIMARY KEY,
     skiltnummer VARCHAR(15),
     tidspunkt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    bompengebod VARCHAR(50) NOT NULL,
-    regnrfk CHAR(7),
-    CONSTRAINT fk_regnr FOREIGN KEY (regnrfk) REFERENCES bil(regnr)
+    bomstasjon VARCHAR(50) NOT NULL,
+    regnr CHAR(7),
+    CONSTRAINT fk_regnr FOREIGN KEY (regnr) REFERENCES bil(regnr)
 );
 
 -- B
@@ -101,7 +101,7 @@ SELECT COUNT(*) AS antall_ukjente_passeringar
 FROM passering
 WHERE regnr IS NULL;
 
--- L 
+-- L
 CREATE TABLE bomstasjon (
     bom_id SERIAL PRIMARY KEY,
     navn VARCHAR(50),
