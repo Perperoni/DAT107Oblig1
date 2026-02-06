@@ -22,12 +22,32 @@ CREATE TABLE bil (
     CONSTRAINT ch_mellom CHECK (registreringstall BETWEEN 10000 AND 99999),
     CONSTRAINT ch_upper CHECK (registreringsbokstav ~ '^[A-Z]{2}$'),
     CONSTRAINT ch_lovlige_bokstavar CHECK (registreringsbokstav !~ '[GIMOQW]'),
-    CONSTRAINT fk_eigar FOREIGN KEY (eigar_id) REFERENCES person(personnummer)
+    CONSTRAINT fk_eigar FOREIGN KEY (eigar_id) REFERENCES person(personnummer) ON UPDATE CASCADE
 );
 
 CREATE TABLE Passering (
     passering_id SERIAL PRIMARY KEY,
     skiltnummer VARCHAR(15),
     tidspunkt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    bompengebod VARCHAR(50) NOT NULL
+    bompengebod VARCHAR(50) NOT NULL,
+    regnrfk CHAR(7),
+    CONSTRAINT fk_regnr FOREIGN KEY (regnrfk) REFERENCES bil(regnr)
 );
+
+
+SELECT *
+FROM passering
+ORDER BY tidspunkt DESC;
+
+SELECT b.regnr, b.merke, b.modell
+FROM bil b
+JOIN person p ON b.eigar_id = p.personnummer
+WHERE p.personnummer = '12345678901';
+
+SELECT bompengebod, COUNT(*) AS antall_passeringar
+FROM passering
+GROUP BY bompengebod;
+
+SELECT *
+FROM passering
+WHERE skiltnummer IS NULL;
